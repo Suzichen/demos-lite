@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --inset-border: 10px;
+    }
+    html,body {
+      margin: 0;
+    }
+    @property --direc { /* 自定义属性 */
+      syntax: '<angle>'; /* 属性类型 */
+      initial-value: 0deg; /* 初始值 */
+      inherits: false; /* 是否能被继承 */
+    }
+    @keyframes rotate {
+      to {
+        --direc: 360deg;
+      }
+    }
+    .card {
+      position: relative;
+      border-radius: 8px;
+      width: 200px;
+      height: 300px;
+      margin: 10vh auto;
+      color: red;
+      font-size: 2rem;
+      background-image: linear-gradient(
+        var(--direc),
+        #5ddcff,
+        #3c67e3 43%,
+        #4e00c2
+      );
+      animation: rotate 3s linear infinite;
+    }
+    .card::before {
+      z-index: -1;
+      filter: blur(20px);
+    }
+    .card::after {
+      content: '';
+      position: absolute;
+      inset: var(--inset-border);
+      background: #fff;
+      border-radius: 0;
+    }
+    .card img {
+      position: absolute;
+      top: var(--inset-border);
+      left: var(--inset-border);
+      z-index: 1;
+      width: calc(100% - var(--inset-border) * 2);
+      height: calc(100% - var(--inset-border) * 2);
+    }
+  </style>
+  <title>Document</title>
+</head>
+<body>
+  <div class="card">
+    <img src="https://puniru-anime.com/assets/images/top/mv_visual03.png" alt="" srcset="">
+  </div>
+</body>
+</html>

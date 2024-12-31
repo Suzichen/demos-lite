@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FLIP Animation Class</title>
+  <style>
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .card {
+      width: 100px;
+      height: 100px;
+      background: lightblue;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #aaa;
+    }
+  </style>
+</head>
+<body>
+  <button onclick="manager.insertCard()">Insert Card</button>
+  <button onclick="manager.removeCard(2)">Remove Card (Index 2)</button>
+  <div class="container" id="container">
+    <div class="card">1</div>
+    <div class="card">2</div>
+    <div class="card">3</div>
+    <div class="card">4</div>
+  </div>
+
+  <script>
+    class FLIPManager {
+      constructor(container) {
+        this.container = container;
+        this.nextCardNumber = container.children.length + 1; // 初始化卡片编号
+      }
+
+      // 插入卡片到最前面
+      insertCard() {
+        const cards = Array.from(this.container.children);
+        const positions = new Map();
+
+        // Step 1: 记录初始位置
+        cards.forEach((card) => {
+          positions.set(card, card.getBoundingClientRect());
+        });
+
+        // Step 2: 创建新卡片并插入到最前面
+        const newCard = document.createElement('div');
+        newCard.className = 'card';
+        newCard.textContent = this.nextCardNumber++;
+        this.container.prepend(newCard);
+
+        // Step 3: 计算位置差异并应用动画
+        requestAnimationFrame(() => {
+          const allCards = Array.from(this.container.children);
+          allCards.forEach((card) => {
+            const oldRect = positions.get(card);
+            const newRect = card.getBoundingClientRect();
+
+            if (oldRect) {
+              const deltaX = oldRect.left - newRect.left;
+              const deltaY = oldRect.top - newRect.top;
+              card.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+            } else {
+              card.style.transform = `scale(0.5)`; // 新卡片缩放效果
+            }
+            card.style.transition = 'transform 0s';
+          });
+
+          // Step 4: 平滑过渡到新布局
+          requestAnimationFrame(() => {
+            const allCards = Array.from(this.container.children);
+            allCards.forEach((card) => {
+              card.style.transform = 'translate(0, 0) scale(1)';
+              card.style.transition = 'transform 300ms ease';
+              // card.styles`
+              //   transform: translate(0, 0) scale(1);
+              //   transition: transform 300ms ease;
+              // `
+            });
+          });
+        });
+      }
+
+      // 根据索引删除卡片
+      removeCard(index) {
+        const cards = Array.from(this.container.children);
+        if (index < 0 || index >= cards.length) {
+          console.error('Invalid index');
+          return;
+        }
+
+        const positions = new Map();
+
+        // Step 1: 记录初始位置
+        cards.forEach((card) => {
+          positions.set(card, card.getBoundingClientRect());
+        });
+
+        // Step 2: 删除指定索引的卡片
+        const cardToRemove = cards[index];
+        cardToRemove.remove();
+
+        // Step 3: 计算位置差异并应用动画
+        requestAnimationFrame(() => {
+          const remainingCards = Array.from(this.container.children);
+          remainingCards.forEach((card) => {
+            const oldRect = positions.get(card);
+            const newRect = card.getBoundingClientRect();
+
+            if (oldRect) {
+              const deltaX = oldRect.left - newRect.left;
+              const deltaY = oldRect.top - newRect.top;
+              card.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+            }
+            card.style.transition = 'transform 0s';
+          });
+
+          // Step 4: 平滑过渡到新布局
+          requestAnimationFrame(() => {
+            const remainingCards = Array.from(this.container.children);
+            remainingCards.forEach((card) => {
+              card.style.transform = 'translate(0, 0)';
+              card.style.transition = 'transform 300ms ease';
+              // card.styles`
+              //   transform: translate(0, 0);
+              //   transition: transform 300ms ease;
+              // `
+            });
+          });
+        });
+      }
+    }
+
+    // 初始化 FLIPManager 实例
+    const container = document.getElementById('container');
+    const manager = new FLIPManager(container);
+  </script>
+</body>
+</html>
